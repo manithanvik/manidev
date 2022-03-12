@@ -1,0 +1,38 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Git clone') {
+            steps {
+                git credentialsId: 'dockerhub', url: 'https://github.com/manithanvik/manidevops.git'
+            }
+        }
+        
+        stage('Docker build') {
+            steps {
+                sh "docker build -t mani/devops-task:01 ."
+            }
+        }
+        stage('Docker stop') {
+            steps {
+                sh 'docker stop $(docker ps -a -q)'
+            }
+        }
+        stage('Docker remove') {
+            steps {
+                sh 'docker rm $(docker ps -a -q)'
+            }
+        }
+        stage('Docker run') {
+            steps {
+                sh "docker run -itd --name=sef7f2fcbe7 -p 3214:5000 mani/devops-task:01"
+            }
+        }
+        stage('Docker image remove') {
+            steps {
+                sh "docker image prune -f"
+                
+            }
+        }
+    }
+}
